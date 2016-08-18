@@ -1,115 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>test2</title>
+</head>
+<body>
+	<form  action="test2.php" method="post">
+	year：<input type="text" required ="required" name="data1" />
+	<br />
+	<input type="submit" value="submit" />
+</form>
+</body>
+</html>
+
 <?php
+ if( !empty($_POST) ){
+ 	 $content=$_POST['data1'];
 
-	// $now=time();//获取当前时间的时间戳;
-// ;
 
-	// $now="2011-08-09"; 
-	// echo $now;
-	// $date_str=date('w',strtotime($now));
-	// echo "<br />".$date_str;
-	// $year="2012";
-	// $year_start = $year. "-01-01"; 
-	// $year_end = $year. "-01-02";
-	// echo "<br />".$year_end.$year_start;
-	// $startday =strtotime($year_start);
-	// $endday =strtotime($year_end);
-	// echo  "<br />".$startday;
-	// $oneDay = 24*3600;
-	// echo  "<br />".($endday-$startday);
-	// while($startday < $endday){
-	// 	break;
-	// 	$startday = $startday+$oneDay;
-	// }
-	// $payrolDay = get_payrolDay(2016);
-	$expenseDay=get_ExpenseDay(2015);
-	// foreach ($payrolDay as $va) {
-	// 	echo  "<br />".$va;
-	// }
-	$firstDay="01/01/2015";
-	$time_lastDay=strtotime($firstDay . '+'. (1). 'month -1 day');
-	echo $time_lastDay;
-	$midDay ="01/05/2015";
-	$time_next_MidDay=strtotime($midDay.'+1 month +1 day');
-	echo $time_next_MidDay;
-	// print_r($payrolDay);
-	// 
-	// echo "<br />".date('w',strtotime("2016-01-03"));
-	// $firstDay = "2006-01-01";
-	// echo "<br />".$firstDay;
-	// echo "<br />".strtotime($firstDay);
-	// $str = strtotime($firstDay . ' +1 month -1 day');
-	// // $firstDay = date('Y-m-d',$str);
-	// // $lastDay=date('Y-m-d', $str);
-	// echo "<br />".$str;
-	// // $firstDay=date('01/m/Y', strtotime($firstDay . ' +1 month'));
-	// $lastDay=date('Y-m-d', strtotime($firstDay . ' +1 month -1 day'));
-	// echo "<br />".$lastDay;
-	// // $firstDay=date('01/m/Y', strtotime($firstDay . ' +2 month'));
-	// $lastDay=date('Y-m-d', strtotime($firstDay . ' +1 month -1 day'));
-	// echo "<br />".$lastDay;
-	// // $firstDay=date('01/m/Y', strtotime($firstDay . ' +3 month'));
-	// $lastDay=date('Y-m-d', strtotime($firstDay . ' +1 month -1 day'));
-	// echo "<br />".$lastDay;
-	function get_payrolDay($year){
-		$firstDay = "01/01/".$year;
-		$num_firstDay= strtotime($firstDay);
-		$oneday=3600*24;
-		for($i=0;$i<12;$i++){
-			$time_lastDay=strtotime($firstDay . '+'. ($i+1). 'month -1 day');
-			$lastDay=date('d/m/Y', $time_lastDay);
-			// echo "<br />".$lastDay;
-			
-			// $time_lastDay= strtotime($lastDay);
-			// echo "<br />".$time_lastDay;
-			$PredicW= date('w',$time_lastDay);
-			// $PredicW= date('N',strtotime($firstDay . '+'. ($i+1). 'month -1 day'));
-			echo "<br />".$PredicW;
-			if($PredicW!=5){
-				if($PredicW>5){
-					$payrolDay[$i]=date('d/m/Y', $time_lastDay-($PredicW-5)*$oneday);
+ 	    class Account{
 
-				}else{
-					$payrolDay[$i]=date('d/m/Y', $time_lastDay-(7+$PredicW-5)*$oneday);
+
+ 	   	var $year;
+ 	   	function __construct($year) {
+        $this->year = $year;   //constructor!
+      
+    } 
+
+    	/*
+    	   get_ExpenseDay : Expenses date is 15th of each month and if this date is a weekend
+		   Expenses Date will be the next Monday.
+
+    	   get the 15th of every month, then check whether its weekend.
+    	 */
+		function get_ExpenseDay(){
+		// echo "<br />ExpenseDay:";
+			$midDay =$this->year."-01-15";
+			// echo "<br />".$midDay;
+			$num_midDay= strtotime($midDay);
+			$oneday=3600*24;
+			for($i=0;$i<12;$i++){
+				$time_next_MidDay=strtotime($midDay . '+'. ($i). 'month');
+				//add one month 
+				$next_MidDay=date('d/m/Y', $time_next_MidDay);
+				//turn str to time format
+				$PredicW= date('w',$time_next_MidDay);
+				//get the corresponding day in week.
+				if($PredicW==6){
+					$expenseDay[$i]=date('d/m/Y', $time_next_MidDay+2*$oneday);
+					//if its saturday, add 2 days then.
 				}
-				
-			}else{
-				$payrolDay[$i]=$lastDay;
+				else if($PredicW==0){
+					$expenseDay[$i]=date('d/m/Y', $time_next_MidDay+1*$oneday);
+					//if its sunday, add one day then
+				}else{
+					$expenseDay[$i]=date('d/m/Y', $time_next_MidDay);
+				}
+				// echo "<br />".$expenseDay[$i];
 			}
-			echo "<br />".$payrolDay[$i];
-			// $firstDay=date('01/m/Y', strtotime($firstDay . ' +'.$i+1, 'month'));
-			// echo "<br />".$firstDay;
-		}
-		return $payrolDay;
-		
-	}
+			return $expenseDay;
+		}	
+	
+		/*
+			get_payrolDay: payrolDay is the last friday of every month
 
-
-	function get_ExpenseDay($year){
-		$midDay =$year."-01-15";
-		echo "<br />".$midDay;
-		$num_midDay= strtotime($midDay);
-		$oneday=3600*24;
-		for($i=0;$i<12;$i++){
-			$time_next_MidDay=strtotime($midDay . '+'. ($i). 'month');
-			// echo "<br />".$time_next_MidDay;
-			$next_MidDay=date('d/m/Y', $time_next_MidDay);
-			 // echo "<br />".$next_MidDay;
+			get the last day of every month, then check whether its friday
+		 */
+		function get_payrolDay(){
+			$firstDay = "01/01/".$this->year;
+			$num_firstDay= strtotime($firstDay);
+			$oneday=3600*24;
+			for($i=0;$i<12;$i++){
+				$time_lastDay=strtotime($firstDay . '+'. ($i+1). 'month -1 day');
+				//(str)get the last day of every month
+				$lastDay=date('d/m/Y', $time_lastDay);
+				//(data format)get the last day of every month
+				$PredicW= date('w',$time_lastDay);
+				//get the corresponding day in week. Then do some adjustment;
+				if($PredicW!=5){
+					if($PredicW>5){
+						$payrolDay[$i]=date('d/m/Y', $time_lastDay-($PredicW-5)*$oneday);
+						//if its saturday, then minus one day
+					}else{
+						$payrolDay[$i]=date('d/m/Y', $time_lastDay-(7+$PredicW-5)*$oneday);
+						//if its sunday to 4, then minus corresponding days;
+					}
+					
+				}else{
+					$payrolDay[$i]=$lastDay;
+				}
+				// echo "<br />".$payrolDay[$i];
+				// $firstDay=date('01/m/Y', strtotime($firstDay . ' +'.$i+1, 'month'));
+				// echo "<br />".$firstDay;
+			}
+			return $payrolDay;
 			
-			// $time_lastDay= strtotime($lastDay);
-			// echo "<br />".$time_lastDay;
-			$PredicW= date('w',$time_next_MidDay);
-			echo "<br />".$PredicW;
-			if($PredicW==6){
-				$expenseDay[$i]=date('d/m/Y', $time_next_MidDay+2*$oneday);
-				echo "<br />".$PredicW;
-			}
-			else if($PredicW==0){
-				$expenseDay[$i]=date('d/m/Y', $time_next_MidDay+1*$oneday);
-			}else{
-				$expenseDay[$i]=date('d/m/Y', $time_next_MidDay);
-			}
-			echo "<br />".$expenseDay[$i];
 		}
-		return $expenseDay;
 	}
+
+	$account= new Account($content);
+	//create a new obj
+	$expenseDay=$account->get_ExpenseDay();
+	//call for get_ExpenseDay method to get expense day
+	$payrolDay=$account->get_payrolDay();
+
+	//output
+	echo "<br />ExpenseDate\tPayrolDate";
+	for ($i=0;$i<12;$i++){
+		echo "<br />".$expenseDay[$i]."\t".$payrolDay[$i];
+	}
+	
+
+
+}
 ?>
